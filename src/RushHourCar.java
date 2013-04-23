@@ -4,11 +4,14 @@ import java.util.ArrayList;
 
 public class RushHourCar extends Object {
 	
-	int x1, x2, y1, y2;
+	private int x1;
+	int x2;
+	private int y1;
+	int y2;
 	private ArrayList< Point > blocks; 	// Stores every coordinate the car has a
 									   	// "block" on
 	private boolean horizontal;
-	int carnum;
+	private int carnum;
 	private static int numcars = 0;
 	
 	
@@ -26,17 +29,17 @@ public class RushHourCar extends Object {
 	 * @param y2 y coordinate 2
 	 */
 	public RushHourCar(int x1, int y1, int x2, int y2) throws IllegalArgumentException {
-		carnum = numcars;
+		setCarnum(numcars);
 		numcars++;
 		
 		if( x1 != x2 && y1 != y2 ) {
 			throw new IllegalArgumentException("New car was not linear");
 		}
 		
-		this.x1 = x1;
+		this.setX1(x1);
 		this.x2 = x2;
 		this.y2 = y2;
-		this.y1 = y1;
+		this.setY1(y1);
 		horizontal = false;
 		if( y1 == y2 ) {
 			horizontal = true;
@@ -64,7 +67,7 @@ public class RushHourCar extends Object {
 	
 	RushHourCar(int x1, int y1, int x2, int y2, int numcar) throws IllegalArgumentException {
 		this( x1, y1, x2, y2 );
-		carnum = numcar;
+		setCarnum(numcar);
 	}
 	
 	/**
@@ -84,8 +87,8 @@ public class RushHourCar extends Object {
 		ArrayList<RushHourCar> new_list = new ArrayList<RushHourCar>();
 		
 		if( horizontal ) {
-			RushHourCar left = new RushHourCar(x1 -1, y1, x2-1, y2, carnum);
-			RushHourCar right = new RushHourCar(x1 + 1, y1, x2 + 1, y2, carnum);
+			RushHourCar left = new RushHourCar(getX1() -1, getY1(), x2-1, y2, getCarnum());
+			RushHourCar right = new RushHourCar(getX1() + 1, getY1(), x2 + 1, y2, getCarnum());
 			if( isValid( left, cars, width, height ) ) {
 				new_list.add( left );
 			}
@@ -93,8 +96,8 @@ public class RushHourCar extends Object {
 				new_list.add( right );
 			}
 		} else {
-			RushHourCar up = new RushHourCar(x1, y1 - 1, x2, y2 - 1, carnum );
-			RushHourCar down = new RushHourCar(x1, y1 + 1, x2, y2 + 1, carnum );
+			RushHourCar up = new RushHourCar(getX1(), getY1() - 1, x2, y2 - 1, getCarnum() );
+			RushHourCar down = new RushHourCar(getX1(), getY1() + 1, x2, y2 + 1, getCarnum() );
 			if( isValid( up, cars, width, height ) ) {
 				new_list.add( up );
 			}
@@ -192,7 +195,31 @@ public class RushHourCar extends Object {
 	public void printOnArray( char[][] array ) {
 		ArrayList< Point > myBlocks = this.getBlocks();
 		for( Point p : myBlocks ) {
-			array[p.x][p.y] = Integer.toString( carnum ).charAt(0);
+			array[p.x][p.y] = Integer.toString( getCarnum() ).charAt(0);
 		}
+	}
+
+	public int getX1() {
+		return x1;
+	}
+
+	public void setX1(int x1) {
+		this.x1 = x1;
+	}
+
+	public int getY1() {
+		return y1;
+	}
+
+	public void setY1(int y1) {
+		this.y1 = y1;
+	}
+
+	public int getCarnum() {
+		return carnum;
+	}
+
+	public void setCarnum(int carnum) {
+		this.carnum = carnum;
 	}
 }
