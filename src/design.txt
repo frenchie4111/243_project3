@@ -1,0 +1,41 @@
+243 Puzzle Solver, Project Part 2:  Water & Clock
+
+Team Member 1: Mike Lyons
+Team Member 2: Shayde Nofziger
+
+1. Explain how your common solver is able to work with both puzzles.
+
+The configs are nolonger stored as integers in solver but as Puzzles.
+Each instance of puzzle has a config assosiated with it, so in order
+to store a solution we have an ArrayList< Puzzle > where each Puzzle
+is a step towards the solution. When getNeighbors is called it returns
+an ArrayList<Puzzle> where each Puzzle is a new instance of Puzzle created
+with a new config. Puzzle also has a mehtod isGoal() that returns whether
+or not the stored config is the solution to the puzzle. This allows
+the config to be any data at all because Solver never has to see
+what kind of variable it is.
+
+2. What was the type of configuration you used for each puzzle?
+
+Each Puzzle instance (Water or Clock) stores a configuration. A configuration
+is a step towards the goal. So the solution is stored as an ArrayList< Puzzle >
+which is an arraylist of "configurations" that reach the goal.
+
+3. Starting with the Puzzle interface from part 1, what were the major
+changes and additions you had to make?
+
+Removing the ArrayList<Integer> from Solver making it into an ArrayList of
+puzzles. Adding a config private instance to Clock and Water that were the
+correct type of configuration for that puzzle. Modifying Clock's
+getNeighbor() so that it returned an ArrayList<Puzzle> rather than an
+ArrayList<Integer>. Adding HashSet<Puzzle> visited to solver so that when
+there was no solution it did not infinite loop.
+
+4. What problems, if any, did you encounter when re-designing your 
+project from part 1?
+
+We forgot to add a hashCode and equals method to Water so if there was
+no solution it would infinite loop (It was not being added to the 
+visited list properly). getNeighbors became more complicated, so it took
+a little bit more work to get it right.
+
