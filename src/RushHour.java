@@ -1,4 +1,9 @@
 import java.awt.Point;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 
 
@@ -31,8 +36,19 @@ public class RushHour implements Puzzle {
 		cars.add(car);
 	}
 	
-	public void setKeyCar( RushHourCar car ) {
+	public void setKeyCar( RushHourCar car) {
+		setKeyCar( car, false );
+	}
+	
+	public void setKeyCar( RushHourCar car, boolean changeGoal ) {
 		keyCar = car;
+		if( changeGoal ) {
+			if( car.isHorizontal() ) {
+				int gy = car.getBlocks().get(0).y;
+				Point new_exit = new Point( this.width-1, gy );
+				this.exit = new_exit;
+			}
+		}
 	}
 	
 	@Override
@@ -90,13 +106,15 @@ public class RushHour implements Puzzle {
 		char[][] array = new char[width][height];
 		for( int i = 0; i < width; i++ ) {
 			for( int j = 0; j < height; j++ ) {
-				array[i][j] = 'x';
+				array[i][j] = '.';
 			}
 		}
-		char letter = 'a';
 		for( RushHourCar c : cars ) {
-			c.printOnArray(array, letter);
-			letter++;
+			if( c == keyCar ) {
+				c.printOnArray(array, '#');
+			} else {
+				c.printOnArray(array);
+			}
 		}
 		return array;
 	}
@@ -147,44 +165,106 @@ public class RushHour implements Puzzle {
 		this.height = height;
 	}
 
+	public static RushHour loadFile(String filename) throws IllegalArgumentException {
+        BufferedReader inputStream = null;
+
+        RushHour new_board = new RushHour(0,0,0,0);
+        
+        try {
+            inputStream = 
+                new BufferedReader( new FileReader( filename ));
+
+            
+
+            String l;
+            // Read first line for board size
+            if( ( l = inputStream.readLine() ) != null ) {
+            	String[] splitString = l.split(" ");
+            	if( splitString.length != 2 ) {
+            		throw new IllegalArgumentException("First line of file incorrect");
+            	}
+            	try {
+            	new_board.setWidth( Integer.parseInt(splitString[0]) );
+            	new_board.setHeight( Integer.parseInt(splitString[1]) );
+            	} catch( NumberFormatException nfe ) {
+            		throw new IllegalArgumentException("First line of file formatted incorectly");
+            	}
+            }
+            
+            int numCars = 0;
+            // Read the number of cars line (Second line)
+            if( ( l = inputStream.readLine() ) != null ) {
+            	try {
+            		numCars = Integer.parseInt( l );
+            	} catch( NumberFormatException nfe ) {
+            		throw new IllegalArgumentException("Second line of file formatted incorrectly");
+            	}
+            }
+            
+            int i = 0;
+            try {
+	            for( i = 0; i < numCars; i++ ) {
+	            	if( (l = inputStream.readLine()) == null ) {
+	            		throw new IllegalArgumentException("Incorrect number of lines in file");
+	            	}
+	            	String[] splitString = l.split(" ");
+	            	if( splitString.length != 4 ) {
+	            		throw new IllegalArgumentException( Integer.toString(i) + " line of file incorrect");
+	            	}
+	            	try {
+	            		RushHourCar new_car = new RushHourCar( 	Integer.parseInt(splitString[0]),
+	            												Integer.parseInt(splitString[1]),
+	            												Integer.parseInt(splitString[2]), 
+	            												Integer.parseInt(splitString[3]) );
+		            	new_board.addCar( new_car );
+		            	new_board.setKeyCar( new_car, true ); // Changes keyCar every time so the last one is the key car
+	            	} catch( NumberFormatException nfe ) {
+	            		throw new NumberFormatException(Integer.toString(i) + " line of file formatted incorectly");
+	            	}
+	            }
+            } catch( NumberFormatException nfe ) {
+            	throw new IllegalArgumentException(Integer.toString(i) + " line of file formatted incorrectly");
+            }
+            
+        } catch( FileNotFoundException fnfe ) {
+            throw new IllegalArgumentException("File not found");
+        } catch( IOException ioe ) {
+        	throw new IllegalArgumentException(ioe.getMessage());
+        } finally {
+            try {
+                if ( inputStream != null ) inputStream.close();
+            }
+            catch( IOException ioe ) {
+                System.out.println( ioe.getMessage() );
+            }
+        }
+        return new_board;
+	}
+	
 	/**
 	 * Takes arguments and solves puzzle based on it
 	 * @param args file
 	 */
 	public static void main(String[] args) {		
-		if(args.length > 2) {
-			Integer goal = Integer.parseInt(args[0]);
-			ArrayList<Integer> buckets = new ArrayList<Integer>(); // Bucket's sizes
-			for( int i = 1; i < args.length; i++ ) {
-				buckets.add( Integer.parseInt(args[i]) );
-			}
+		if(args.length > 0) {
 			try {
-				//Assign args
-			} catch(Throwable t) {
-				System.out.println("One of the arguments was not a number");
-			}
-			boolean bound_check = false;
-			for( Integer bucket : buckets ) {
-				if( bucket >= goal ) {
-					bound_check = true;
-				}
-			}
-			if(goal > 0 && buckets.size() > 0 && bound_check) { // Bound check args
-			
-				Puzzle myPuzzle = (Puzzle) new Water(goal, buckets);	
+				Puzzle myPuzzle = loadFile( args[0] );	
 				ArrayList< Puzzle > solution = Solver.solve(myPuzzle);
 				
 				if(solution != null) {
-					for( int i = 0; i < solution.size(); i++ ) {
-						System.out.println("Step " + Integer.toString(i) + ": " + solution.get(i));
+					int i = 0;
+					for( Puzzle s : solution ) {
+						System.out.println("Step " + Integer.toString(i++) + ": ");
+						((RushHour) s).printConfig();
+						System.out.println("");
 					}
 				} else {
 					System.out.println("No solution.");	
 				}
-			
-			} else {
-				System.out.println("No solution.");
+			} catch( IllegalArgumentException iae ) {
+				System.out.println( iae.getMessage() );
 			}
+			
 		} else {
 			System.out.println("Usage: file");
 		}

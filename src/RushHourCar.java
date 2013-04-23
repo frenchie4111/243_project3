@@ -8,6 +8,8 @@ public class RushHourCar extends Object {
 	private ArrayList< Point > blocks; 	// Stores every coordinate the car has a
 									   	// "block" on
 	private boolean horizontal;
+	int carnum;
+	private static int numcars = 0;
 	
 	
 	/**
@@ -24,6 +26,9 @@ public class RushHourCar extends Object {
 	 * @param y2 y coordinate 2
 	 */
 	public RushHourCar(int x1, int y1, int x2, int y2) throws IllegalArgumentException {
+		carnum = numcars;
+		numcars++;
+		
 		if( x1 != x2 && y1 != y2 ) {
 			throw new IllegalArgumentException("New car was not linear");
 		}
@@ -57,6 +62,11 @@ public class RushHourCar extends Object {
 		}
 	}
 	
+	RushHourCar(int x1, int y1, int x2, int y2, int numcar) throws IllegalArgumentException {
+		this( x1, y1, x2, y2 );
+		carnum = numcar;
+	}
+	
 	/**
 	 * Get's valid moves for this car, given a board
 	 * First it checks if the car is horizontal or vertical, then depending on
@@ -74,8 +84,8 @@ public class RushHourCar extends Object {
 		ArrayList<RushHourCar> new_list = new ArrayList<RushHourCar>();
 		
 		if( horizontal ) {
-			RushHourCar left = new RushHourCar(x1 -1, y1, x2-1, y2);
-			RushHourCar right = new RushHourCar(x1 + 1, y1, x2 + 1, y2);
+			RushHourCar left = new RushHourCar(x1 -1, y1, x2-1, y2, carnum);
+			RushHourCar right = new RushHourCar(x1 + 1, y1, x2 + 1, y2, carnum);
 			if( isValid( left, cars, width, height ) ) {
 				new_list.add( left );
 			}
@@ -83,8 +93,8 @@ public class RushHourCar extends Object {
 				new_list.add( right );
 			}
 		} else {
-			RushHourCar up = new RushHourCar(x1, y1 - 1, x2, y2 - 1 );
-			RushHourCar down = new RushHourCar(x1, y1 + 1, x2, y2 + 1);
+			RushHourCar up = new RushHourCar(x1, y1 - 1, x2, y2 - 1, carnum );
+			RushHourCar down = new RushHourCar(x1, y1 + 1, x2, y2 + 1, carnum );
 			if( isValid( up, cars, width, height ) ) {
 				new_list.add( up );
 			}
@@ -100,7 +110,7 @@ public class RushHourCar extends Object {
 	 * Checks if a given car is valid on the given board
 	 * 
 	 * @param car The car to check if valid
-	 * @param cars An ArrayList of cars that the new car is to be checked agaisnt
+	 * @param cars An ArrayList of cars that the new car is to be checked against
 	 * @param width Width of board
 	 * @param height Height of board
 	 * @return if the new car is valid or not
@@ -160,6 +170,10 @@ public class RushHourCar extends Object {
 		return blocks;
 	}
 	
+	public boolean isHorizontal() {
+		return horizontal;
+	}
+	
 	/**
 	 * Puts this car onto the given array
 	 * @param array the array to print onto
@@ -169,6 +183,16 @@ public class RushHourCar extends Object {
 		ArrayList< Point > myBlocks = this.getBlocks();
 		for( Point p : myBlocks ) {
 			array[p.x][p.y] = letter;
+		}
+	}
+	/**
+	 * Puts this car onto the given array of chars
+	 * @param array the array to print onto
+	 */
+	public void printOnArray( char[][] array ) {
+		ArrayList< Point > myBlocks = this.getBlocks();
+		for( Point p : myBlocks ) {
+			array[p.x][p.y] = Integer.toString( carnum ).charAt(0);
 		}
 	}
 }
