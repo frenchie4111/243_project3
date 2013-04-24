@@ -5,9 +5,9 @@ import java.util.ArrayList;
 public class RushHourCar extends Object {
 	
 	private int x1;
-	int x2;
+	private int x2;
 	private int y1;
-	int y2;
+	private int y2;
 	private ArrayList< Point > blocks; 	// Stores every coordinate the car has a
 									   	// "block" on
 	private boolean horizontal;
@@ -37,8 +37,8 @@ public class RushHourCar extends Object {
 		}
 		
 		this.setX1(x1);
-		this.x2 = x2;
-		this.y2 = y2;
+		this.setX2(x2);
+		this.setY2(y2);
 		this.setY1(y1);
 		horizontal = false;
 		if( y1 == y2 ) {
@@ -46,26 +46,14 @@ public class RushHourCar extends Object {
 		}
 		
 		this.blocks = new ArrayList< Point >();
-		getBlocks().add( new Point( x1, y1 ) );
-		while( x1 < x2 ) {
-			x1++;
-			getBlocks().add( new Point( x1, y1 ) );
-		}
-		while( x1 > x2 ) {
-			x2++;
-			getBlocks().add( new Point( x2, y2 ) );
-		}
-		while( y1 < y2 ) {
-			y1++;
-			getBlocks().add( new Point( x1, y1 ) );
-		}
-		while( y1 > y2 ) {
-			y2++;
-			getBlocks().add( new Point( x2, y2 ) );
-		}
+		reassesBlocks();
 	}
 	
-	RushHourCar(int x1, int y1, int x2, int y2, int numcar) throws IllegalArgumentException {
+	public RushHourCar( RushHourCar oldc ) {
+		this( oldc.getX1(), oldc.getY1(), oldc.getX2(), oldc.getY2(), oldc.getCarnum() );
+	}
+	
+	public RushHourCar(int x1, int y1, int x2, int y2, int numcar) throws IllegalArgumentException {
 		this( x1, y1, x2, y2 );
 		setCarnum(numcar);
 	}
@@ -87,8 +75,8 @@ public class RushHourCar extends Object {
 		ArrayList<RushHourCar> new_list = new ArrayList<RushHourCar>();
 		
 		if( horizontal ) {
-			RushHourCar left = new RushHourCar(getX1() -1, getY1(), x2-1, y2, getCarnum());
-			RushHourCar right = new RushHourCar(getX1() + 1, getY1(), x2 + 1, y2, getCarnum());
+			RushHourCar left = new RushHourCar(getX1() -1, getY1(), getX2()-1, getY2(), getCarnum());
+			RushHourCar right = new RushHourCar(getX1() + 1, getY1(), getX2() + 1, getY2(), getCarnum());
 			if( isValid( left, cars, width, height ) ) {
 				new_list.add( left );
 			}
@@ -96,8 +84,8 @@ public class RushHourCar extends Object {
 				new_list.add( right );
 			}
 		} else {
-			RushHourCar up = new RushHourCar(getX1(), getY1() - 1, x2, y2 - 1, getCarnum() );
-			RushHourCar down = new RushHourCar(getX1(), getY1() + 1, x2, y2 + 1, getCarnum() );
+			RushHourCar up = new RushHourCar(getX1(), getY1() - 1, getX2(), getY2() - 1, getCarnum() );
+			RushHourCar down = new RushHourCar(getX1(), getY1() + 1, getX2(), getY2() + 1, getCarnum() );
 			if( isValid( up, cars, width, height ) ) {
 				new_list.add( up );
 			}
@@ -105,7 +93,6 @@ public class RushHourCar extends Object {
 				new_list.add( down );
 			}
 		}
-		
 		return new_list;
 	}
 	
@@ -160,7 +147,7 @@ public class RushHourCar extends Object {
 	public String toString() {
 		String new_string = "";
 		for( Point p : blocks ) {
-			new_string += p.toString();
+			new_string += "(" + Integer.toString( p.x ) + ", " + Integer.toString( p.y ) + ") ";
 		}
 		return new_string;
 	}
@@ -171,6 +158,10 @@ public class RushHourCar extends Object {
 	 */
 	public ArrayList< Point > getBlocks() {
 		return blocks;
+	}
+	
+	public void setBlocks(ArrayList< Point > blocks) {
+		this.blocks = blocks;
 	}
 	
 	public boolean isHorizontal() {
@@ -198,6 +189,31 @@ public class RushHourCar extends Object {
 			array[p.x][p.y] = Integer.toString( getCarnum() ).charAt(0);
 		}
 	}
+	
+	public void reassesBlocks() {
+		int x1 = this.x1;
+		int x2 = this.x2;
+		int y1 = this.y1;
+		int y2 = this.y2;
+		getBlocks().clear();
+		getBlocks().add( new Point( x1, y1 ) );
+		while( x1 < x2 ) {
+			x1++;
+			getBlocks().add( new Point( x1, y1 ) );
+		}
+		while( x1 > x2 ) {
+			x2++;
+			getBlocks().add( new Point( x2, y2 ) );
+		}
+		while( y1 < y2 ) {
+			y1++;
+			getBlocks().add( new Point( x1, y1 ) );
+		}
+		while( y1 > y2 ) {
+			y2++;
+			getBlocks().add( new Point( x2, y2 ) );
+		}
+	}
 
 	public int getX1() {
 		return x1;
@@ -221,5 +237,21 @@ public class RushHourCar extends Object {
 
 	public void setCarnum(int carnum) {
 		this.carnum = carnum;
+	}
+
+	public int getX2() {
+		return x2;
+	}
+
+	public void setX2(int x2) {
+		this.x2 = x2;
+	}
+
+	public int getY2() {
+		return y2;
+	}
+
+	public void setY2(int y2) {
+		this.y2 = y2;
 	}
 }

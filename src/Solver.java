@@ -38,6 +38,7 @@ public class Solver {
 	 * @return ArrayList<Integer> - Solution to puzzle
 	 */
 	public static ArrayList< Puzzle > solve(Puzzle myPuzzle) {
+		visited.clear();
 		ArrayList< ArrayList< Puzzle > > queue = new ArrayList< ArrayList< Puzzle > >();
 		ArrayList< Puzzle > current = new ArrayList< Puzzle >();
 		current.add(myPuzzle);
@@ -48,8 +49,9 @@ public class Solver {
 		while( !queue.isEmpty() && !found) {
 			current = queue.remove(0);
 			ArrayList<Puzzle> neighbors = current.get( current.size() - 1 ).getNeighbors();
-			
+
 			for(Puzzle newConfig : neighbors) {
+
 				if( !visited.contains(newConfig) ) {
 					visited.add(newConfig);
 					ArrayList<Puzzle> newCurrent = new ArrayList<Puzzle>(current);

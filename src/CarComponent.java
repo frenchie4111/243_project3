@@ -2,6 +2,7 @@ import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Graphics;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -15,15 +16,14 @@ import javax.swing.JComponent;
 import javax.swing.event.MouseInputAdapter;
 
 
-public class CarComponent extends JComponent implements Observer {
+public class CarComponent extends JComponent {
     protected Point anchorPoint;
     protected Cursor draggingCursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR);
     protected boolean overbearing = false;
     
 	private boolean horizontal;
 	
-	private RushHourCar thisCar;
-	private RushHour parentBoard;
+	private int carnum;
 
     public CarComponent() {
         addDragListeners();
@@ -41,30 +41,17 @@ public class CarComponent extends JComponent implements Observer {
     	setBackground( c );
     }
     
-    public CarComponent( RushHourCar car, int width, int height, Color c ) {
-    	this( car.isHorizontal(), c );
-		int sizePerBlockW = ( 480 / width );
-		int sizePerBlockH = ( 480 / height );
-		int new_car_x = car.getX1() * sizePerBlockW ;
-		int new_car_y = car.getY1() * sizePerBlockH ;
-		int new_car_w = sizePerBlockW;
-		int new_car_h = sizePerBlockH;
-		if( car.isHorizontal() ) {
-			new_car_w *= car.getBlocks().size();
-			System.out.println(car.getBlocks().size());
-		} else {
-			new_car_h *= car.getBlocks().size();
-		}
-		System.out.printf("New car %d %d %d %d", new_car_x, new_car_y, new_car_w, new_car_h);
-		setLocation( new_car_x, new_car_y );
-		setSize( new_car_w, new_car_h );
+    public CarComponent( int carnum, boolean horizontal, int x, int y, int width, int height, Color c ) {
+    	this( horizontal, c );
+    	setLocation( x, y );
+		setSize( width, height );
+		this.carnum = carnum;
     }
     
 
     private void addDragListeners() {        
         DragListener listener = new DragListener( this );
         addMouseMotionListener( listener );
-        addMouseListener( listener );
     }
     
     private class DragListener extends MouseInputAdapter {
@@ -104,25 +91,7 @@ public class CarComponent extends JComponent implements Observer {
                 repaint();
             }
         }
-        
-        @Override
-        public void mouseReleased( MouseEvent e ) {
-        	System.out.println("Mouse Released");
-        	handle.moveCar();
-        }
-    }
-    
-    /**
-     * Moves the RushHourCar that this button is representing
-     */
-    public void moveCar() {
-    	int thisx = getLocation().x;
-    	int thisy = getLocation().y;
-    	int newx = Math.round( thisx / BoardPanel.sizePerBlockW ) * BoardPanel.sizePerBlockW;
-    	int newy = Math.round( thisy / BoardPanel.sizePerBlockH ) * BoardPanel.sizePerBlockH;
-    	setLocation( newx, newy );
-    }
-    
+    }  
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -132,9 +101,11 @@ public class CarComponent extends JComponent implements Observer {
         }
     }
 
-	@Override
-	public void update(Observable o, Object arg) {
-		// TODO Auto-generated method stub
-		
+	public int getCarnum() {
+		return carnum;
+	}
+	
+	public void setDimensions(Rectangle rec) {
+		this.setLocation(rec.x, rec.y);
 	}
 }
