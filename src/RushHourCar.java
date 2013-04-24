@@ -49,10 +49,23 @@ public class RushHourCar extends Object {
 		reassesBlocks();
 	}
 	
+	/**
+	 * Creates a new car that is a copy of the car given
+	 * @param oldc Car to create a copy of
+	 */
 	public RushHourCar( RushHourCar oldc ) {
 		this( oldc.getX1(), oldc.getY1(), oldc.getX2(), oldc.getY2(), oldc.getCarnum() );
 	}
 	
+	/**
+	 * Creates a new car at the given positions, with the given number
+	 * @param x1 Coordinate of car
+	 * @param y1 Coordinate of car
+	 * @param x2 Coordinate of car
+	 * @param y2 Coordinate of car
+	 * @param numcar The car's number
+	 * @throws IllegalArgumentException If car is not linear throws exception
+	 */
 	public RushHourCar(int x1, int y1, int x2, int y2, int numcar) throws IllegalArgumentException {
 		this( x1, y1, x2, y2 );
 		setCarnum(numcar);
@@ -123,7 +136,9 @@ public class RushHourCar extends Object {
 		return true;
 	}
 	
-	@Override
+	/**
+	 * Equals method for car, checks if they contain the same blocks (Blocks may accidentally be in the wrong order)
+	 */
 	public boolean equals(Object o) {
 		if( o instanceof RushHourCar ) {
 			RushHourCar c = (RushHourCar) o;
@@ -143,7 +158,10 @@ public class RushHourCar extends Object {
 		return false;
 	}
 	
-	@Override
+	/**
+	 * Returns a string representation of a cars points, (x,y)(x,y)(x,y) where each point is the location of
+	 * one of the cars blocks
+	 */
 	public String toString() {
 		String new_string = "";
 		for( Point p : blocks ) {
@@ -190,6 +208,9 @@ public class RushHourCar extends Object {
 		}
 	}
 	
+	/**
+	 * Resasses the blocks for the car based on the cars xy coordinates
+	 */
 	public void reassesBlocks() {
 		int x1 = this.x1;
 		int x2 = this.x2;
@@ -215,43 +236,83 @@ public class RushHourCar extends Object {
 		}
 	}
 
+	/**
+	 * Gets the cars xposition
+	 * @return x1
+	 */
 	public int getX1() {
 		return x1;
 	}
 
+	/**
+	 * Sets the cars x position
+	 * @param x1 the new x position
+	 */
 	public void setX1(int x1) {
 		this.x1 = x1;
 	}
 
+	/**
+	 * Gets the cars y1 position
+	 * @return y1 the y1 of the car
+	 */
 	public int getY1() {
 		return y1;
 	}
 
+	/**
+	 * Sets the cars y position
+	 * @param y1 the new y position
+	 */
 	public void setY1(int y1) {
 		this.y1 = y1;
 	}
 
-	public int getCarnum() {
-		return carnum;
-	}
-
-	public void setCarnum(int carnum) {
-		this.carnum = carnum;
-	}
-
+	/**
+	 * Gets the cars x2 position
+	 * @return x2 int the x2 position of the car (Lower right hand corner)
+	 */
 	public int getX2() {
 		return x2;
 	}
 
+	/**
+	 * Sets the x2 position of the car
+	 * @param x2 the new x2
+	 */
 	public void setX2(int x2) {
 		this.x2 = x2;
 	}
 
+	/**
+	 * Gets the cars y2 position
+	 * @return y2 int the y2 position of the car
+	 */
 	public int getY2() {
 		return y2;
 	}
 
+	/**
+	 * Sets the cars y2 position
+	 * @param y2
+	 */
 	public void setY2(int y2) {
 		this.y2 = y2;
+	}
+	
+	/**
+	 * Gets the cars number
+	 * @return gets the car number
+	 */
+	public int getCarnum() {
+		return carnum;
+	}
+
+	/**
+	 * Sets the cars number
+	 * @param carnum sets the carnum
+	 */
+	public void setCarnum(int carnum) {
+		this.carnum = carnum;
 	}
 }

@@ -10,6 +10,7 @@ import java.util.Observer;
 import javax.swing.JComponent;
 
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -39,6 +40,12 @@ public class RushHourViewController extends JFrame {
 	}
 	
 	private void setup() {
+		setSize(504,550);
+		setLocation(100, 100);
+		setResizable(false);
+		setDefaultCloseOperation(EXIT_ON_CLOSE);
+		
+		setLayout(null);
 		
 		JMenuBar menuBar = new JMenuBar();
 		menuBar.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
@@ -58,27 +65,23 @@ public class RushHourViewController extends JFrame {
 		
 		add(menuBar);
 		
-		setSize(640,520);
-		setLocation(100, 100);
-		setResizable(false);
-		setDefaultCloseOperation(EXIT_ON_CLOSE);
-		
-		setLayout(null);
+		JPanel borderPanel = new JPanel();
+		borderPanel.setLayout(null);
+		borderPanel.setSize(500,500);
+		borderPanel.setLocation(0, 20);
+		borderPanel.setBackground(Color.gray);
 		
 		BoardPanel boardPanel = new BoardPanel( model );
-		boardPanel.setLocation(0, 20);
-		add( boardPanel );
+		boardPanel.setLocation(10, 10);
+
+		//add( boardPanel );
 		
-		JButton button = new JButton("Print Board");
-		button.setLocation( 480, 430 );
-		button.setSize(new Dimension( 160, 50 ));
-		add( button );
-		button.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				model.printConfig();				
-			}
-		});
+		borderPanel.add( boardPanel );
+		
+		boardPanel.addBorderBreak(borderPanel);
+		
+		add( borderPanel );
+		
 		addListeners();
 		setVisible(true);
 	}
@@ -88,6 +91,7 @@ public class RushHourViewController extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				System.out.println("Open File Pressed");
+				final JFileChooser fc = new JFileChooser();
 			}
 		});
 		cheat.addActionListener( new ActionListener() {
@@ -108,7 +112,7 @@ public class RushHourViewController extends JFrame {
 	
 	public static void main( String args[] ) {
 		
-		RushHour myGame = RushHour.loadFile("test2.txt");		
+		RushHour myGame = RushHour.loadFile("test3.txt");		
 		new RushHourViewController( myGame );
 	}
 }

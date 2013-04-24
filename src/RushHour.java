@@ -15,10 +15,20 @@ public class RushHour extends Observable implements Puzzle {
 	
 	public static RushHour originalConfig = null; // For reseting
 	
+	/**
+	 * Initialized a new RushHour that is copy of the one given
+	 * @param oldrh the old RushHour to copy
+	 */
 	public RushHour( RushHour oldrh ) {
 		changeTo( oldrh );
 	}
 	
+	/**
+	 * Changes the current RushHour to match the given one
+	 * 	This is to be used for reseting the game to the initial
+	 * 	configuration, creating a copy of the board
+	 * @param oldrh
+	 */
 	public void changeTo( RushHour oldrh ) {
 		System.out.println("Copying");
 		this.cars = new ArrayList<RushHourCar>();
@@ -37,6 +47,14 @@ public class RushHour extends Observable implements Puzzle {
 		System.out.println("Done Copying");
 	}
 	
+	/**
+	 * Creates a new instance of RushHour with the information given
+	 * @param cars ArrayList<RushHourCar> the cars that are in the new board
+	 * @param width Width of the board
+	 * @param height Height of the board
+	 * @param exitx Exit position x of the board
+	 * @param exity Exit position y of the board
+	 */
 	public RushHour( ArrayList<RushHourCar> cars, int width, int height, int exitx, int exity ) {
 		this.cars = cars;
 		this.width = width;
@@ -50,12 +68,23 @@ public class RushHour extends Observable implements Puzzle {
 		}
 	}
 	
-	public void setOriginal() {
-		originalConfig = new RushHour(this);
-	}
-	
+	/**
+	 * Creates a new instance of RushHour with the information given
+	 * @param width The width of the board
+	 * @param height The height of the board
+	 * @param exitx The exit x position of the board
+	 * @param exity The exit y position of the board
+	 */
 	public RushHour( int width, int height, int exitx, int exity ) {
 		this( new ArrayList<RushHourCar>(), width, height, exitx, exity );
+	}
+	
+	/**
+	 * Sets the current config to the original config
+	 * The original config is used when people request a game reset
+	 */
+	public void setOriginal() {
+		originalConfig = new RushHour(this);
 	}
 	
 	/**
@@ -66,26 +95,44 @@ public class RushHour extends Observable implements Puzzle {
 		cars.add(car);
 	}
 	
+	/**
+	 * Sets the key car, key car is the car that is trying to get to
+	 * the exit
+	 * @param car The car that is the keyCar. NOTE: This car should also exist in the cars list
+	 */
 	public void setKeyCar( RushHourCar car) {
 		setKeyCar( car, false );
 	}
 	
+	/**
+	 * Returns the key car, the car that is trying to get to the exit
+	 * @return Returns the keyCar
+	 */
 	public RushHourCar getKeyCar() {
 		return keyCar;
 	}
 	
+	/**
+	 * Sets the key car and sets the goal to the far right of the key car
+	 * @param car Car to change the key car to
+	 * @param changeGoal Whether or not to change the goal
+	 */
 	public void setKeyCar( RushHourCar car, boolean changeGoal ) {
 		keyCar = car;
 		if( changeGoal ) {
 			if( car.isHorizontal() ) {
 				int gy = car.getBlocks().get(0).y;
+				// Just copy the y position of the car, and put it on the
+				// Far right of the board
 				Point new_exit = new Point( this.width-1, gy );
 				this.setExit(new_exit);
 			}
 		}
 	}
 	
-	@Override
+	/**
+	 * Checks if the current configuration matches the goal
+	 */
 	public Boolean isGoal() {
 		ArrayList< Point > cBlocks = keyCar.getBlocks();
 		for( Point p : cBlocks ) {
@@ -96,7 +143,12 @@ public class RushHour extends Observable implements Puzzle {
 		return false;
 	}
 
-	@Override
+	/**
+	 * Get's the neighbors of the current config.
+	 * This get neighbors goes through each car and asks
+	 * it to return it's valid moves then adds them to the
+	 * list
+	 */
 	public ArrayList<Puzzle> getNeighbors() {
 		ArrayList<Puzzle> new_configs = new ArrayList<Puzzle>(); // New List of configs
 		for( RushHourCar c : cars ) { // For each car
@@ -132,16 +184,25 @@ public class RushHour extends Observable implements Puzzle {
 		return new_configs;
 	}
 	
-	@Override
+	/**
+	 * Gets the config for later use
+	 */
 	public Object getConfig() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 	
+	/**
+	 * Gets the car list
+	 * @return ArrayList<RushHourCar> cars
+	 */
 	public ArrayList<RushHourCar> getCars() {
 		return cars;
 	}
 	
+	/**
+	 * Prints the config in a grid representation
+	 */
 	public void printConfig() {
 		char[][] array = getCharRepresentation();
 		for( int i = 0; i < width; i++ ) {
@@ -152,6 +213,10 @@ public class RushHour extends Observable implements Puzzle {
 		}
 	}
 	
+	/**
+	 * Returns a char[][] that represents the board
+	 * @return char[][] Representation of the board
+	 */
 	private char[][] getCharRepresentation() {
 		char[][] array = new char[width][height];
 		for( int i = 0; i < width; i++ ) {
@@ -169,6 +234,9 @@ public class RushHour extends Observable implements Puzzle {
 		return array;
 	}
 	
+	/**
+	 * Returns the char representation as a string
+	 */
 	public String toString() {
 		String new_string = "";
 		char[][] array = getCharRepresentation();
@@ -181,6 +249,10 @@ public class RushHour extends Observable implements Puzzle {
 		return new_string;
 	}
 	
+	/**
+	 * checks if the two boards are equal by checking if their string representations are equal
+	 * This won't work if the boards have different cars in the same places
+	 */
 	public boolean equals( Object o ) {
 		if( o instanceof RushHour ) {
 			RushHour r = (RushHour)o;
@@ -191,10 +263,19 @@ public class RushHour extends Observable implements Puzzle {
 		return false;
 	}
 	
+	/**
+	 * Returns hashCode for someone up top to use for storing this in a hash map/set
+	 */
 	public int hashCode() {
 		return this.toString().hashCode();
 	}
 	
+	/**
+	 * Moves the given car num to the given position, IFF the new position is valid
+	 * @param carnum The car to move
+	 * @param newx The new x position of the car
+	 * @param newy The new y position of the car
+	 */
 	public void move( int carnum, int newx, int newy ) {
 		RushHourCar carToMove = null; 
 		for( RushHourCar car : cars ) {
@@ -230,12 +311,18 @@ public class RushHour extends Observable implements Puzzle {
 		notifyObservers();
 	}
 
+	/**
+	 * Resets the board to original
+	 */
 	public void reset() {
 		changeTo( originalConfig );
 		setChanged();
 		notifyObservers();
 	}
 	
+	/**
+	 * Moves the board one step closer to the goal
+	 */
 	public void cheat() {
 		this.printConfig();
 		ArrayList<Puzzle> solution = Solver.solve( this );
@@ -253,34 +340,68 @@ public class RushHour extends Observable implements Puzzle {
 		notifyObservers();
 	}
 	
+	/**
+	 * Sets the cars list to the given list
+	 * @param cars The list to set the cars to
+	 */
 	public void setCars(ArrayList<RushHourCar> cars) {
 		this.cars = cars;
 	}
 
+	/**
+	 * Returns the width of the board
+	 * @return int width of board
+	 */
 	public int getWidth() {
 		return width;
 	}
 
-	public void setWidth(int width) {
+	/**
+	 * Sets the width of the board to the given width
+	 * @param width The width to change the width to
+	 */
+	private void setWidth(int width) {
 		this.width = width;
 	}
 
+	/**
+	 * Gets the height of the board
+	 * @return int the height of the board
+	 */
 	public int getHeight() {
 		return height;
 	}
 
-	public void setHeight(int height) {
+	/**
+	 * Sets the height of the board to the given height
+	 * @param height The height of the board
+	 */
+	private void setHeight(int height) {
 		this.height = height;
 	}
 	
+	/**
+	 * Gets the exit position of the board	
+	 * @return Point the exit (Goal) of the board
+	 */
 	public Point getExit() {
 		return exit;
 	}
 
+	/**
+	 * Sets the exit to the given point
+	 * @param exit Exit
+	 */
 	public void setExit(Point exit) {
 		this.exit = exit;
 	}
 
+	/**
+	 * Loads a board config from the given filename
+	 * @param filename The file to load the board from
+	 * @return RushHour a new board 
+	 * @throws IllegalArgumentException
+	 */
 	public static RushHour loadFile(String filename) throws IllegalArgumentException {
         BufferedReader inputStream = null;
 

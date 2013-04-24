@@ -15,7 +15,7 @@ public class BoardPanel extends JPanel implements Observer{
 	
 	RushHour model;
 	
-	HashMap<Integer, CarComponent> carButtons;
+	private HashMap<Integer, CarComponent> carButtons;
 	
 	public static int sizePerBlockH;
 	public static int sizePerBlockW;
@@ -28,7 +28,7 @@ public class BoardPanel extends JPanel implements Observer{
 		setBackground( Color.black );
 		setLayout(null);
 		
-		carButtons = new HashMap<Integer, CarComponent>();
+		setCarButtons(new HashMap<Integer, CarComponent>());
 	}
 	
 	public BoardPanel( RushHour model ) {
@@ -53,7 +53,7 @@ public class BoardPanel extends JPanel implements Observer{
 		Rectangle dim = computeDimensions(car);
 		
 		CarComponent new_car = new CarComponent( car.getCarnum(), horiz, dim.x, dim.y, dim.width, dim.height, new Color((int)(Math.random() * 0xFFFFFF)) );
-		carButtons.put( car.getCarnum() ,  new_car );
+		getCarButtons().put( car.getCarnum() ,  new_car );
 		addCar( new_car );
 	}
 	
@@ -77,9 +77,9 @@ public class BoardPanel extends JPanel implements Observer{
 	}
 	
 	private void addListeners() {
-		ArrayList< Integer > keys = new ArrayList<Integer>( carButtons.keySet() );
+		ArrayList< Integer > keys = new ArrayList<Integer>( getCarButtons().keySet() );
 		for( Integer key : keys ) {
-			carButtons.get(key).addMouseListener(new endDragListener(key));
+			getCarButtons().get(key).addMouseListener(new endDragListener(key));
 		}
 	}
 	
@@ -97,13 +97,14 @@ public class BoardPanel extends JPanel implements Observer{
         	System.out.println("IN PANEL Mouse Released");
         	BoardPanel board = ((BoardPanel) e.getComponent().getParent());
         	board.moveCar(key);
+        	board.getCarButtons().get(key).moveEnded();
         }
 	}
 	
 	public void moveCar( int key ) {
-		System.out.println( carButtons.get(key).getCarnum() );
-		int thisx = carButtons.get(key).getLocation().x;
-		int thisy = carButtons.get(key).getLocation().y;
+		System.out.println( getCarButtons().get(key).getCarnum() );
+		int thisx = getCarButtons().get(key).getLocation().x;
+		int thisy = getCarButtons().get(key).getLocation().y;
 		int newxcoord = Math.round( (float)thisx / (float)BoardPanel.sizePerBlockW );
 		int newycoord = Math.round( (float)thisy / (float)BoardPanel.sizePerBlockH );
 		
@@ -115,13 +116,29 @@ public class BoardPanel extends JPanel implements Observer{
 			addCar( car );
 		}
 	}
+	
+	public void addBorderBreak( JPanel panel ) {
+		JPanel blackbox = new JPanel();
+		blackbox.setSize( 1000, sizePerBlockH );
+		blackbox.setLocation( 10, model.getExit().y * sizePerBlockH + 10);
+		blackbox.setBackground(Color.black);
+		panel.add(blackbox);
+	}
 
 	@Override
 	public void update(Observable arg0, Object arg1) {
 		ArrayList< RushHourCar > cars = model.getCars();
 		for( RushHourCar c : cars ) {
-			CarComponent currentButton = this.carButtons.get(c.getCarnum());
+			CarComponent currentButton = this.getCarButtons().get(c.getCarnum());
 			currentButton.setDimensions( computeDimensions( c ) );
 		}
+	}
+
+	public HashMap<Integer, CarComponent> getCarButtons() {
+		return carButtons;
+	}
+
+	public void setCarButtons(HashMap<Integer, CarComponent> carButtons) {
+		this.carButtons = carButtons;
 	}
 }

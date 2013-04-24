@@ -24,6 +24,8 @@ public class CarComponent extends JComponent {
 	private boolean horizontal;
 	
 	private int carnum;
+	private int moveDistance; // Used to limit it to one block per move
+	private Point startingPosition;
 
     public CarComponent() {
         addDragListeners();
@@ -32,7 +34,11 @@ public class CarComponent extends JComponent {
         setSize(300,300);
         setLocation( 0, 0 );
 
+        this.startingPosition = new Point(0, 0);
+        
         horizontal = true;
+        
+        moveDistance = 0;
     }
     
     public CarComponent( boolean horizontal, Color c ) {
@@ -43,6 +49,8 @@ public class CarComponent extends JComponent {
     
     public CarComponent( int carnum, boolean horizontal, int x, int y, int width, int height, Color c ) {
     	this( horizontal, c );
+    	startingPosition.x = x;
+    	startingPosition.y = y;
     	setLocation( x, y );
 		setSize( width, height );
 		this.carnum = carnum;
@@ -74,17 +82,43 @@ public class CarComponent extends JComponent {
             int anchorX = anchorPoint.x;
             int anchorY = anchorPoint.y;
 
+            Point oldPosition = getLocation();
+            
             Point parentOnScreen = getParent().getLocationOnScreen();
             Point mouseOnScreen = e.getLocationOnScreen();
             Point position = new Point();
             if( horizontal ) {
                 position = new Point(mouseOnScreen.x - parentOnScreen.x - 
 						anchorX, getLocation().y);
+                
+                handle.moveDistance += oldPosition.x - position.x;
+                if( Math.abs(moveDistance) <= BoardPanel.sizePerBlockW ) {
+                	setLocation(position);
+                } else {
+                	if( position.x > startingPosition.x ) {
+                		position.x = handle.startingPosition.x + BoardPanel.sizePerBlockW;
+                	} else {
+                		position.x = handle.startingPosition.x - BoardPanel.sizePerBlockW;
+                	}
+                	setLocation(position);
+                }
+                
             } else {
             	position = new Point(getLocation().x, mouseOnScreen.y - 
 						parentOnScreen.y - anchorY);
+            	handle.moveDistance += oldPosition.y - position.y;
+                if( Math.abs(moveDistance) <= BoardPanel.sizePerBlockH ) {
+                	setLocation(position);
+                } else {
+                	if( position.y > startingPosition.y ) {
+                		position.y = handle.startingPosition.y + BoardPanel.sizePerBlockH;
+                	} else {
+                		position.y = handle.startingPosition.y - BoardPanel.sizePerBlockH;
+                	}
+                	setLocation(position);
+                }
             }
-            setLocation(position);
+            
 
             if (overbearing) {
                 getParent().setComponentZOrder(handle, 0);
@@ -92,6 +126,11 @@ public class CarComponent extends JComponent {
             }
         }
     }  
+    
+    public void moveEnded() {
+    	this.moveDistance = 0;
+    }
+    
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -106,6 +145,8 @@ public class CarComponent extends JComponent {
 	}
 	
 	public void setDimensions(Rectangle rec) {
+		startingPosition.x = rec.x;
+		startingPosition.y = rec.y;
 		this.setLocation(rec.x, rec.y);
 	}
 }
