@@ -39,6 +39,8 @@ public class BoardPanel extends JPanel implements Observer{
 		sizePerBlockH = (480 / model.getHeight());
 		sizePerBlockW = (480 / model.getWidth());
 		
+		setCarButtons(new HashMap<Integer, CarComponent>());
+		
 		loadCars();
 		addListeners();
 	}
@@ -52,7 +54,13 @@ public class BoardPanel extends JPanel implements Observer{
 		
 		Rectangle dim = computeDimensions(car);
 		
-		CarComponent new_car = new CarComponent( car.getCarnum(), horiz, dim.x, dim.y, dim.width, dim.height, new Color((int)(Math.random() * 0xFFFFFF)) );
+		Color new_car_color = new Color((int)(Math.random() * 0xFFFFFF));
+		
+		if( model.getKeyCar() == car ) {
+			new_car_color = Color.red;
+		}
+		
+		CarComponent new_car = new CarComponent( car.getCarnum(), horiz, dim.x, dim.y, dim.width, dim.height, new_car_color );
 		getCarButtons().put( car.getCarnum() ,  new_car );
 		addCar( new_car );
 	}
