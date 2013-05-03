@@ -13,6 +13,8 @@ public class RushHour extends Observable implements Puzzle {
 	private RushHourCar keyCar;
 	private Point exit;
 	
+	private int moves;
+	
 	public static RushHour originalConfig = null; // For reseting
 	
 	/**
@@ -44,6 +46,7 @@ public class RushHour extends Observable implements Puzzle {
 		this.setExit(oldrh.getExit());
 		this.setWidth(oldrh.getWidth());
 		this.setHeight(oldrh.getHeight());
+		this.setMoves(oldrh.getMoves());
 		System.out.println("Done Copying");
 	}
 	
@@ -66,6 +69,7 @@ public class RushHour extends Observable implements Puzzle {
 		if( originalConfig == null ) {
 			setOriginal();
 		}
+		this.moves = 0;
 	}
 	
 	/**
@@ -77,6 +81,7 @@ public class RushHour extends Observable implements Puzzle {
 	 */
 	public RushHour( int width, int height, int exitx, int exity ) {
 		this( new ArrayList<RushHourCar>(), width, height, exitx, exity );
+		this.moves = 0;
 	}
 	
 	/**
@@ -207,7 +212,7 @@ public class RushHour extends Observable implements Puzzle {
 		char[][] array = getCharRepresentation();
 		for( int i = 0; i < width; i++ ) {
 			for( int j = 0; j < height; j++ ) {
-				System.out.print( array[j][i] );
+				System.out.print( array[i][j] );
 			}
 			System.out.println("");
 		}
@@ -242,7 +247,7 @@ public class RushHour extends Observable implements Puzzle {
 		char[][] array = getCharRepresentation();
 		for( int i = 0; i < width; i++ ) {
 			for( int j = 0; j < height; j++ ) {
-				new_string += Character.toString( array[j][i] );
+				new_string += Character.toString( array[i][j] );
 			}
 			new_string += "\n";
 		}
@@ -307,6 +312,7 @@ public class RushHour extends Observable implements Puzzle {
 				cars.add( oldcar );
 			}
 		}
+		addMove();
 		setChanged();
 		notifyObservers();
 	}
@@ -331,8 +337,9 @@ public class RushHour extends Observable implements Puzzle {
 		}
 		if( solution != null && solution.size() > 1 ) {
 			this.cars.clear();
+			int moves = getMoves() + 1;
 			this.changeTo( (RushHour) solution.get(1) );
-			
+			setMoves(moves);
 		} else {
 			System.out.println( "Already Solved" );
 		}
@@ -419,8 +426,8 @@ public class RushHour extends Observable implements Puzzle {
             		throw new IllegalArgumentException("First line of file incorrect");
             	}
             	try {
-            	new_board.setWidth( Integer.parseInt(splitString[0]) );
-            	new_board.setHeight( Integer.parseInt(splitString[1]) );
+            	new_board.setWidth( Integer.parseInt(splitString[1]) );
+            	new_board.setHeight( Integer.parseInt(splitString[0]) );
             	} catch( NumberFormatException nfe ) {
             		throw new IllegalArgumentException("First line of file formatted incorectly");
             	}
@@ -447,10 +454,10 @@ public class RushHour extends Observable implements Puzzle {
 	            		throw new IllegalArgumentException( Integer.toString(i) + " line of file incorrect");
 	            	}
 	            	try {
-	            		RushHourCar new_car = new RushHourCar( 	Integer.parseInt(splitString[0]),
-	            												Integer.parseInt(splitString[1]),
-	            												Integer.parseInt(splitString[2]), 
-	            												Integer.parseInt(splitString[3]) );
+	            		RushHourCar new_car = new RushHourCar( 	Integer.parseInt(splitString[1]),
+	            												Integer.parseInt(splitString[0]),
+	            												Integer.parseInt(splitString[3]), 
+	            												Integer.parseInt(splitString[2]) );
 		            	new_board.addCar( new_car );
 		            	new_board.setKeyCar( new_car, true ); // Changes keyCar every time so the last one is the key car
 	            	} catch( NumberFormatException nfe ) {
@@ -475,6 +482,18 @@ public class RushHour extends Observable implements Puzzle {
         }
         new_board.setOriginal();
         return new_board;
+	}
+	
+	public int getMoves() {
+		return moves;
+	}
+	
+	public void setMoves(int moves) {
+		this.moves = moves;
+	}
+	
+	public void addMove() {
+		moves++;
 	}
 	
 	/**

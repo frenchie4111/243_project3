@@ -6,6 +6,9 @@ import java.awt.GridLayout;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.util.Observable;
 import java.util.Observer;
 import javax.swing.JComponent;
@@ -41,7 +44,6 @@ public class RushHourViewController extends JFrame implements Observer {
 	}
 	
 	private void setup() {
-		
 		
 		setSize(500,700);
 		setLocation(100, 100);
@@ -136,8 +138,15 @@ public class RushHourViewController extends JFrame implements Observer {
 	}
 	
 	public static void main( String args[] ) {
+		OutputStream noop = new OutputStream() {
+			@Override
+			public void write(int arg0) throws IOException {
+				// NOOP
+			}
+		};
+		System.setOut(new PrintStream(noop));
 		
-		RushHour myGame = RushHour.loadFile("test3.txt");		
+		RushHour myGame = RushHour.loadFile("test5.txt");		
 		new RushHourViewController( myGame );
 	}
 
@@ -149,6 +158,7 @@ public class RushHourViewController extends JFrame implements Observer {
 	public void update() {
 		status.setText( "<html><center>" + 
 						(model.isGoal()?"You Have Won!":"Please Make A Move") +
+						"<br/>Moves: " + Integer.toString( model.getMoves() ) +
 						"</center></html>" );
 		status.setBackground( model.isGoal()?Color.green:Color.red );
 	}
